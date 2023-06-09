@@ -9,14 +9,14 @@ gum style --border normal --margin "1" --padding "1 2" --border-foreground 212 "
 
 sleep 1.5; clear
 
-if [[ -n $(git status --porcelain) ]]; then
+if [ -n "$(git status --porcelain)" ]; then
   if gum confirm "Stage all?"; then
     git add . && gum spin -s line --title "Staging files..." -- sleep 1
   else
     sleep .5; echo "No files staged...adiós partner :wave:" | gum format -t emoji && exit 1
   fi
 else
-  echo "blabla"
+  exit 1
 fi
 
 sleep 1; clear
