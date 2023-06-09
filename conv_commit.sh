@@ -1,22 +1,27 @@
 #!/bin/sh
 
+# This script is used to write a conventional commit message.
+# It prompts the user to choose the type of commit as specified in the
+# Conventional Commit spec (https://www.conventionalcommits.org/en/v1.0.0/#specification)
+# and then prompts for the summary and detailed description of the message.
+
 gum style --border normal --margin "1" --padding "1 2" --border-foreground 212 "Hey friend! Let's $(gum style --foreground 212 'git') committin'."
 
 sleep 1.5; clear
 
-if [ -z "$(git status -s -uno | grep -v '^ ' | awk '{print $2}')" ]; then
+if [[ -n $(git status --porcelain) ]]; then
   if gum confirm "Stage all?"; then
     git add . && gum spin -s line --title "Staging files..." -- sleep 1
   else
     sleep .5; echo "No files staged...adiós partner :wave:" | gum format -t emoji && exit 1
   fi
+else
+  echo "blabla"
 fi
 
 sleep 1; clear
 
-echo "Can you tell me the type this commit?"
-
-TYPE=$(gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
+TYPE=$(gum choose --header "Commit type" "fix" "feat" "ci" "perf" "build" "docs" "style" "refactor" "test" "chore" "revert")
 SCOPE=$(gum input --placeholder "scope")
 
 clear
@@ -28,5 +33,4 @@ test -n "$SCOPE" && SCOPE="($SCOPE)"
 SUMMARY=$(gum input --value "$TYPE$SCOPE: " --placeholder "Summary of this change")
 DESCRIPTION=$(gum write --placeholder "Details of this change (CTRL+D to finish)")
 
-# Commit these changes
 gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
